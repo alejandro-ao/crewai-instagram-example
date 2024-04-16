@@ -1,6 +1,7 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from instagram.tools.search import SearchTools
+from langchain_anthropic import ChatAnthropic
 
 # Uncomment the following line to use an example of a custom tool
 # from instagram.tools.custom_tool import MyCustomTool
@@ -8,6 +9,9 @@ from instagram.tools.search import SearchTools
 # Check our tools documentations for more information on how to use them
 # from crewai_tools import SerperDevTool
 
+ClaudeHaiku = ChatAnthropic(
+    model="claude-3-haiku-20240307"
+)
 
 @CrewBase
 class InstagramCrew:
@@ -26,11 +30,12 @@ class InstagramCrew:
               SearchTools.open_page,
             ],
             verbose=True,
+            llm=ClaudeHaiku,
         )
 
     @agent
     def content_strategist(self) -> Agent:
-        return Agent(config=self.agents_config["content_strategist"], verbose=True)
+        return Agent(config=self.agents_config["content_strategist"], verbose=True,llm=ClaudeHaiku)
 
     @agent
     def visual_creator(self) -> Agent:
@@ -38,11 +43,12 @@ class InstagramCrew:
             config=self.agents_config["visual_creator"],
             verbose=True,
             allow_delegation=False,
+            llm=ClaudeHaiku,
         )
 
     @agent
     def copywriter(self) -> Agent:
-        return Agent(config=self.agents_config["copywriter"], verbose=True)
+        return Agent(config=self.agents_config["copywriter"], verbose=True,llm=ClaudeHaiku)
 
     @task
     def market_research(self) -> Task:
