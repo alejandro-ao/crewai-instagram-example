@@ -30,25 +30,51 @@ class SearchTools:
     return loader.load()
     
 
-  def search(query, limit=5):
+  # def search(query, limit=5):
 
+  #   url = "https://google.serper.dev/search"
+  #   payload = json.dumps({
+  #     "q": query,
+  #     "num": limit,
+  #   })
+  #   headers = {
+  #     'X-API-KEY': os.getenv("SERPER_API_KEY"),
+  #     'Content-Type': 'application/json'
+  #   }
+  #   response = requests.request("POST", url, headers=headers, data=payload)
+  #   results = response.json()['organic']
+    
+  #   string = []
+  #   for result in results:
+  #     string.append(f"{result['title']}\n{result['snippet']}\n{result['link']}\n\n")
+      
+  #   return f"Search results for '{query}':\n\n" + "\n".join(string)
+
+  def search(query, limit=5):
     url = "https://google.serper.dev/search"
     payload = json.dumps({
-      "q": query,
-      "num": limit,
+        "q": query,
+        "num": limit,
     })
     headers = {
-      'X-API-KEY': os.getenv("SERPER_API_KEY"),
-      'Content-Type': 'application/json'
+        'X-API-KEY': os.getenv("SERPER_API_KEY"),
+        'Content-Type': 'application/json'
     }
     response = requests.request("POST", url, headers=headers, data=payload)
-    results = response.json()['organic']
-    
+    data = response.json()
+
+    if 'organic' in data:
+        results = data['organic']
+    elif 'items' in data:
+        results = data['items']
+    else:
+        return "没有找到任何搜索结果。"
+
     string = []
     for result in results:
-      string.append(f"{result['title']}\n{result['snippet']}\n{result['link']}\n\n")
-      
-    return f"Search results for '{query}':\n\n" + "\n".join(string)
+        string.append(f"{result['title']}\n{result['snippet']}\n{result['link']}\n\n")
+
+    return f"搜索'{query}'的结果:\n\n" + "\n".join(string)
   
   
 if __name__ == "__main__":
